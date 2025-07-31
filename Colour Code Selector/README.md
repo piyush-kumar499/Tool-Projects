@@ -3,11 +3,11 @@
 A powerful and intuitive color picker tool that allows users to select colors and get their values in multiple formats including HEX, RGB, and HSL. The tool also generates beautiful color palettes based on your selected color.
 
 ## Screenshots
-![Main Interface]()
-![Color Palette]()
-![Mobile View]()
-![Mobile View]()
-![Mobile View]()
+![Main Interface](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Colour%20Code%20Selector/images/2.jpg)
+![Color Palette](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Colour%20Code%20Selector/images/3.jpg)
+![Mobile View](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Colour%20Code%20Selector/images/4.jpg)
+![Mobile View](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Colour%20Code%20Selector/images/5.jpg)
+![Mobile View](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Colour%20Code%20Selector/images/6.jpg)
 
 ## Features
 

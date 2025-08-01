@@ -361,6 +361,12 @@ MIT License - feel free to use this project for personal and commercial purposes
 
 ---
 
+## Author
+
+**Piyush Kumar**
+
+---
+
 **Made with ❤️ and ☕**
 
 *Happy Coding! 🚀*

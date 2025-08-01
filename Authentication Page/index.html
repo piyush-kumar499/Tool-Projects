@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="container" id="loginContainer">
+        <h1 class="form-title">Login</h1>
+        <form id="loginForm">
+            <div id="loginMessage" class="message-div" style="display:none;"></div>
+            
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="loginEmail" placeholder=" " required>
+                <label for="loginEmail">Email</label>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPassword" placeholder=" " required>
+                <label for="loginPassword">Password</label>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <span class="button-text">Sign In</span>
+                <div class="loading-spinner" style="display: none;"></div>
+            </button>
+        </form>
+        
+        <div class="recover">
+            <a href="#" id="forgotPasswordLink">Forgot password?</a>
+        </div>
+        
+        <div class="social-login">
+            <div class="or-divider">
+                <span>or</span>
+            </div>
+            <div class="social-buttons">
+                <button class="social-btn google-btn" id="googleLoginBtn">
+                    <i class="fab fa-google"></i>
+                    <span>Continue with Google</span>
+                </button>
+                <button class="social-btn facebook-btn" id="facebookLoginBtn">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Continue with Facebook</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="links">
+            <p>Don't have an account?</p>
+            <button type="button" id="showRegisterBtn" class="link-button">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- Register Form -->
+    <div class="container" id="registerContainer" style="display:none;">
+        <h1 class="form-title">Create Account</h1>
+        <form id="registerForm">
+            <div id="registerMessage" class="message-div" style="display:none;"></div>
+            
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="firstName" placeholder=" " required>
+                <label for="firstName">First Name</label>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="lastName" placeholder=" " required>
+                <label for="lastName">Last Name</label>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="registerEmail" placeholder=" " required>
+                <label for="registerEmail">Email</label>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="registerPassword" placeholder=" " required minlength="6">
+                <label for="registerPassword">Password</label>
+                <div class="password-strength" id="passwordStrength"></div>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="confirmPassword" placeholder=" " required>
+                <label for="confirmPassword">Confirm Password</label>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <span class="button-text">Create Account</span>
+                <div class="loading-spinner" style="display: none;"></div>
+            </button>
+        </form>
+        
+        <div class="links">
+            <p>Already have an account?</p>
+            <button type="button" id="showLoginBtn" class="link-button">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div class="container" id="forgotPasswordContainer" style="display:none;">
+        <h1 class="form-title">Reset Password</h1>
+        <p class="form-subtitle">Enter your email address and we'll send you a link to reset your password.</p>
+        
+        <form id="forgotPasswordForm">
+            <div id="forgotPasswordMessage" class="message-div" style="display:none;"></div>
+            
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="forgotEmail" placeholder=" " required>
+                <label for="forgotEmail">Email</label>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <span class="button-text">Send Reset Link</span>
+                <div class="loading-spinner" style="display: none;"></div>
+            </button>
+        </form>
+        
+        <div class="links">
+            <p>Remember your password?</p>
+            <button type="button" id="backToLoginBtn" class="link-button">Back to Login</button>
+        </div>
+    </div>
+
+    <!-- Main Content (shown after successful authentication) -->
+    <div class="main-content" id="mainContent" style="display:none;">
+        <div class="header">
+            <h1>Welcome to Your Dashboard!</h1>
+            <div class="user-info">
+                <span id="userDisplayName">Loading...</span>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="card">
+                <h3>Profile Information</h3>
+                <div class="profile-info">
+                    <p><strong>Name:</strong> <span id="profileName">-</span></p>
+                    <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+                    <p><strong>Account Created:</strong> <span id="accountCreated">-</span></p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn">Update Profile</button>
+                    <button class="action-btn">Change Password</button>
+                    <button class="action-btn">Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="auth.js"></script>
+    <script>
+        // Simple form switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const loginContainer = document.getElementById('loginContainer');
+            const registerContainer = document.getElementById('registerContainer');
+            const forgotPasswordContainer = document.getElementById('forgotPasswordContainer');
+            
+            const showRegisterBtn = document.getElementById('showRegisterBtn');
+            const showLoginBtn = document.getElementById('showLoginBtn');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const backToLoginBtn = document.getElementById('backToLoginBtn');
+            
+            // Function to show specific container
+            function showContainer(containerToShow) {
+                loginContainer.style.display = 'none';
+                registerContainer.style.display = 'none';
+                forgotPasswordContainer.style.display = 'none';
+                containerToShow.style.display = 'block';
+            }
+            
+            // Event listeners for form switching
+            showRegisterBtn.addEventListener('click', function() {
+                showContainer(registerContainer);
+            });
+            
+            showLoginBtn.addEventListener('click', function() {
+                showContainer(loginContainer);
+            });
+            
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showContainer(forgotPasswordContainer);
+            });
+            
+            backToLoginBtn.addEventListener('click', function() {
+                showContainer(loginContainer);
+            });
+        });
+    </script>
+</body>
+</html>

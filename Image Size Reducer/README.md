@@ -1,8 +1,8 @@
 # Image Size Reducer 🖼️
 
-![Image Size Reducer]()
-![Image Size Reducer]()
-![Image Size Reducer]()
+![Image Size Reducer](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Image%20Size%20Reducer/images/2.jpg)
+![Image Size Reducer](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Image%20Size%20Reducer/images/3.jpg)
+![Image Size Reducer](https://github.com/piyush-kumar499/Tool-Projects/blob/main/Image%20Size%20Reducer/images/4.jpg)
 
 A powerful, client-side image compression and resizing tool that helps you reduce image file sizes while maintaining quality. No server uploads required - everything happens in your browser!
 

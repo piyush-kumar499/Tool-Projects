@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 0.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);    
+        }
+        
+        h2 {
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+        .upload-area:hover {
+            border-color: #2196F3;
+            background-color: #E3F2FD;
+        }
+       
+        .upload-area.dragover {
+            border-color: #2196F3;
+            background-color: #E3F2FD;
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .settings-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .dimensions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .preview-area {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .preview-area img {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1976D2;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }        
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #ddd;
+            border-radius: 2px;
+            margin: 1rem 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar .progress {
+            width: 0%;
+            height: 100%;
+            background-color: #2196F3;
+            transition: width 0.3s ease;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: #2196F3;
+        }
+        #settings {
+            display: none;
+            
+        .progress-bar {
+            display: none;
+            width: 100%;
+            height: 10px;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar .progress {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            transition: width 0.4s;
+        }
+        .btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .file-info {
+            margin-top: 1rem;
+            color: #333;
+            font-weight: 500;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #initialDownloadBtn {
+            background-color: #007BFF;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #initialDownloadBtn:hover {
+            background-color: #0056b3;
+            transform: scale(1.15);
+        }
+
+        #finalDownloadBtn {
+            background-color: #28A745;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #finalDownloadBtn:hover {
+            background-color: #218838;
+            transform: scale(1.15);
+        }
+        .bold-text {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <h2>Upload Image</h2>
+            <div class="upload-area" id="uploadArea">
+                <i>📁</i>
+                <p>Drag and drop your image here <br> or <br> click to browse</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none">
+            </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <div class="preview-area" id="previewArea"></div>
+<div id="fileInfo" class="file-info">
+      </div> 
+          </div>
+
+        <div class="section" id="settings">
+            <h2>Settings</h2>
+            <div class="settings-group">
+                <label>Dimensions</label>
+                <div class="dimensions">
+                    <input type="number" id="width" placeholder="Width (px)" min="1">
+                    <input type="number" id="height" placeholder="Height (px)" min="1">
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label>Scale (%)</label>
+                <input type="range" id="scale" min="1" max="100" value="100">
+                <span id="scaleValue">100%</span>
+            </div>
+
+            <div class="settings-group">
+                <label>Output Format</label>
+                <select id="format">
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                    <option value="webp">WebP</option>
+                </select>
+            </div>
+
+            <div class="settings-group">
+                <label>Quality</label>
+                <input type="range" id="quality" min="1" max="100" value="72">
+                <span id="qualityValue">72%</span>
+            </div>
+
+            <div class="settings-group">
+                <label>Background Color</label>
+                <div class="color-picker" id="colorPicker">
+                    <div class="color-option selected" style="background-color: #ffffff" data-color="#ffffff"></div>
+                    <div class="color-option" style="background-color: #000000" data-color="#000000"></div>
+                    <div class="color-option" style="background-color: #ff0000" data-color="#ff0000"></div>
+                    <div class="color-option" style="background-color: #00ff00" data-color="#00ff00"></div>
+                    <div class="color-option" style="background-color: #0000ff" data-color="#0000ff"></div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label>Resize Algorithm</label>
+                <select id="algorithm">
+                    <option value="bicubic">Bicubic</option>
+                    <option value="bilinear">Bilinear</option>
+                    <option value="lanczos">Lanczos</option>
+                </select>
+            </div>
+
+<div class="settings-group">
+    <label>Estimated Image Size:</label>
+    <span id="fileSize" class="bold-text">Calculating...</span>
+</div>
+
+<div class="button-container">
+    <button class="btn" id="initialDownloadBtn" disabled>Resize</button>
+    <div class="progress-bar" id="downloadProgressBar">
+        <div class="progress" id="downloadProgress"></div>
+    </div>
+    <button class="btn" id="finalDownloadBtn" style="display: none;">Download Image</button>
+</div>
+
+    <script>
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const previewArea = document.getElementById('previewArea');
+        const settings = document.getElementById('settings');
+        const initialDownloadBtn = document.getElementById('initialDownloadBtn');
+        const finalDownloadBtn = document.getElementById('finalDownloadBtn');
+        const downloadProgressBar = document.getElementById('downloadProgressBar');
+        const downloadProgress = document.getElementById('downloadProgress');
+        const fileSizeSpan = document.getElementById('fileSize');
+        const scaleInput = document.getElementById('scale');
+        const scaleValue = document.getElementById('scaleValue');
+        const qualityInput = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const algorithmSelect = document.getElementById('algorithm');
+        const formatSelect = document.getElementById('format');
+
+        let currentImage = null;
+        let originalWidth = 0;
+        let originalHeight = 0;
+        let aspectRatio = 1;
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Modified dimension input handlers
+        widthInput.addEventListener('input', function() {
+            if (this.value > originalWidth) {
+                this.value = originalWidth;
+            }
+            if (this.value > 0) {
+                heightInput.value = Math.round(this.value / aspectRatio);
+                scaleInput.value = (this.value / originalWidth) * 100;
+                scaleValue.textContent = `${Math.round((this.value / originalWidth) * 100)}%`;
+                updateImage();
+            }
+        });
+
+        heightInput.addEventListener('input', function() {
+            if (this.value > originalHeight) {
+                this.value = originalHeight;
+            }
+            if (this.value > 0) {
+                widthInput.value = Math.round(this.value * aspectRatio);
+                scaleInput.value = (this.value / originalHeight) * 100;
+                scaleValue.textContent = `${Math.round((this.value / originalHeight) * 100)}%`;
+                updateImage();
+            }
+        });
+
+        scaleInput.addEventListener('input', (e) => {
+            const scale = Math.min(e.target.value / 100, 1);
+            scaleValue.textContent = `${e.target.value}%`;
+            widthInput.value = Math.round(originalWidth * scale);
+            heightInput.value = Math.round(originalHeight * scale);
+            updateImage();
+        });
+
+        qualityInput.addEventListener('input', (e) => {
+            qualityValue.textContent = `${e.target.value}%`;
+            updateImage();
+        });
+
+        formatSelect.addEventListener('change', updateImage);
+        algorithmSelect.addEventListener('change', updateImage);
+
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                updateImage();
+            });
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+
+            const file = files[0];
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+            
+            // Calculate file size in KB or MB
+    let fileSizeText;
+    if (file.size < 1024 * 1024) { // Less than 1 MB
+        fileSizeText = (file.size / 1024).toFixed(2) + " KB";
+    } else { // 1 MB or more
+        fileSizeText = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+    // Display file name and size
+    const fileName = file.name;
+    fileInfo.textContent = `File Name: ${fileName} | File Size: ${fileSizeText}`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                settings.style.display = 'block';
+                    currentImage = img;
+                    originalWidth = img.width;
+                    originalHeight = img.height;
+                    aspectRatio = originalWidth / originalHeight;
+                    widthInput.value = originalWidth;
+                    heightInput.value = originalHeight;
+                    widthInput.max = originalWidth;
+                    heightInput.max = originalHeight;
+                    scaleInput.value = 100;
+                    scaleValue.textContent = '100%';
+                    updateImage();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Show progress bar
+            progressBar.style.display = 'block';
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progress.style.width = '0%';
+                    }, 500);
+                } else {
+                    width += 5;
+                    progress.style.width = width + '%';
+                }
+            }, 50);
+        }
+
+        function applyResizeAlgorithm(ctx, image, width, height) {
+            const algorithm = algorithmSelect.value;
+            ctx.imageSmoothingEnabled = true;
+            
+            switch (algorithm) {
+                case 'bilinear':
+                    ctx.imageSmoothingQuality = 'low';
+                    break;
+                case 'bicubic':
+                    ctx.imageSmoothingQuality = 'medium';
+                    break;
+                case 'lanczos':
+                    ctx.imageSmoothingQuality = 'high';
+                    break;
+            }
+
+            // For better quality downscaling, use step-by-step reduction
+            if (width < image.width || height < image.height) {
+                let currentWidth = image.width;
+                let currentHeight = image.height;
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+
+                while (currentWidth > width * 2 || currentHeight > height * 2) {
+                    currentWidth = Math.max(currentWidth / 2, width);
+                    currentHeight = Math.max(currentHeight / 2, height);
+                    tempCanvas.width = currentWidth;
+                    tempCanvas.height = currentHeight;
+                    tempCtx.drawImage(image, 0, 0, currentWidth, currentHeight);
+                    image = tempCanvas;
+                }
+            }
+
+            ctx.drawImage(image, 0, 0, width, height);
+        }
+
+        function compressPNG(canvas, quality) {
+            // Create a temporary canvas for quantization
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+
+            // Draw original image to temporary canvas
+            tempCtx.drawImage(canvas, 0, 0);
+
+            // Get image data
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imageData.data;
+
+            // Apply color reduction based on quality
+            const factor = Math.max(1, Math.floor((100 - quality) / 10));
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.round(data[i] / factor) * factor;     // R
+                data[i + 1] = Math.round(data[i + 1] / factor) * factor; // G
+                data[i + 2] = Math.round(data[i + 2] / factor) * factor; // B
+                // Alpha channel remains unchanged
+            }
+
+            // Put modified image data back
+            tempCtx.putImageData(imageData, 0, 0);
+
+            return tempCanvas;
+        }
+
+        function updateImage() {
+            if (!currentImage) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const width = parseInt(widthInput.value);
+            const height = parseInt(heightInput.value);
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Fill background
+            const selectedColor = document.querySelector('.color-option.selected').dataset.color;
+            ctx.fillStyle = selectedColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Apply resize algorithm
+            applyResizeAlgorithm(ctx, currentImage, width, height);
+
+            // Handle different formats and quality
+            const format = formatSelect.value;
+            const quality = parseInt(qualityInput.value);
+            let finalCanvas = canvas;
+            let imageType, imageQuality;
+
+            switch(format) {
+                case 'png':
+                    imageType = 'image/png';
+                    finalCanvas = compressPNG(canvas, quality);
+                    imageQuality = undefined;
+                    break;
+                case 'jpeg':
+                    imageType = 'image/jpeg';
+                    imageQuality = quality / 100;
+                    break;
+                case 'webp':
+                    imageType = 'image/webp';
+                    imageQuality = quality / 100;
+                    break;
+            }
+
+            // Update preview
+            const preview = document.createElement('img');
+            preview.src = finalCanvas.toDataURL(imageType, imageQuality);
+            previewArea.innerHTML = '';
+            previewArea.appendChild(preview);
+
+         finalCanvas.toBlob((blob) => {
+    let fileSizeText;
+    const fileSizeKB = blob.size / 1024;
+
+    if (fileSizeKB >= 1024) {
+        // Convert to MB if file size is 1024 KB or more
+        const fileSizeMB = (fileSizeKB / 1024).toFixed(2);
+        fileSizeText = `${fileSizeMB} MB`;
+    } else {
+        // Show in KB if file size is less than 1024 KB
+        fileSizeText = `${fileSizeKB.toFixed(2)} KB`;
+    }
+
+    fileSizeSpan.textContent = fileSizeText;
+}, imageType, imageQuality);
+
+initialDownloadBtn.disabled = false;
+        }
+
+ initialDownloadBtn.addEventListener('click', () => {
+            downloadProgressBar.style.display = 'block'; 
+            downloadProgress.style.width = '0'; 
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                downloadProgress.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    downloadProgressBar.style.display = 'none';
+                    finalDownloadBtn.style.display = 'block';
+                }
+            }, 400);
+        });
+
+ finalDownloadBtn.addEventListener('click', () => {
+            if (!currentImage) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const width = parseInt(widthInput.value);
+            const height = parseInt(heightInput.value);
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Fill background
+            const selectedColor = document.querySelector('.color-option.selected').dataset.color;
+            ctx.fillStyle = selectedColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Apply resize algorithm
+            applyResizeAlgorithm(ctx, currentImage, width, height);
+
+            // Handle different formats and quality
+            const format = formatSelect.value;
+            const quality = parseInt(qualityInput.value);
+            let finalCanvas = canvas;
+            let imageType, imageQuality;
+
+            switch(format) {
+                case 'png':
+                    imageType = 'image/png';
+                    finalCanvas = compressPNG(canvas, quality);
+                    imageQuality = undefined;
+                    break;
+                case 'jpeg':
+                    imageType = 'image/jpeg';
+                    imageQuality = quality / 100;
+                    break;
+                case 'webp':
+                    imageType = 'image/webp';
+                    imageQuality = quality / 100;
+                    break;
+            }
+
+            // Create download link
+            finalCanvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `resized-image.${format}`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }, imageType, imageQuality);
+        });
+    </script>
+</body>
+</html>
